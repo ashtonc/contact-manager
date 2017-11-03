@@ -3,12 +3,9 @@ package main
 import (
 	"fmt"
 	"html/template"
-	//"io/ioutil"
 	"log"
 	"net/http"
-	//"os"
 	"strconv"
-	//"strings"
 )
 
 type Contact struct {
@@ -27,7 +24,7 @@ func (c *Contact) save() error {
 }
 
 func loadContact(id int) (*Contact, error) {
-	//Find the contact with that Id in the database
+	//Find the contact with that Id in the database and load it
 	contact := Contact{
 		Id:        1,
 		FirstName: "Ashton",
@@ -52,11 +49,6 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 	contactIdString := r.URL.Path[len("/contact/"):]
-	//t, _ := (template.ParseFiles("templates/contact.tmpl")
-	//t := template.Must(template.ParseFiles("templates/contact.tmpl", "templates/base.tmpl"))
-	t, err := template.ParseFiles("templates/base.tmpl", "templates/contact.tmpl")
-
-	//log.Print("Request for contact " + contactIdString)
 
 	contactId, err := strconv.Atoi(contactIdString)
 	if err != nil {
@@ -67,10 +59,10 @@ func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Load and print the contact page
 	contact, _ := loadContact(contactId)
-	
+
+	t, err := template.ParseFiles("templates/base.tmpl", "templates/contact.tmpl")
 	t.Execute(w, contact)
 
-	//fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", contact.FirstName, contact.Notes)
 	log.Print("Displaying contact " + contactIdString)
 }
 
@@ -89,7 +81,7 @@ func main() {
 
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/contact/", viewContactHandler)
-	http.HandleFunc("/new", newContactHandler)
+	http.HandleFunc("/contact/new", newContactHandler)
 
 	log.Print("Running server on port " + PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT, nil))
