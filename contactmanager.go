@@ -11,7 +11,6 @@ import (
 
 type Contact struct {
 	Id        int
-	Name      string
 	FirstName string
 	LastName  string
 	Email     string
@@ -70,13 +69,24 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 	contact, _ := loadContact(contactId)
 	
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/edit_contact.tmpl")
-	t.Execute(w, contact)
+	
+	if r.Method != http.MethodPost {
+		t.Execute(w, contact)
+		log.Print("Displaying edit contact page for contact " + contactIdString + ".")
+		return
+	}
 }
 
 func newContactHandler(w http.ResponseWriter, r *http.Request) {
-	// Create a new contact
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/add_contact.tmpl")
-	t.Execute(w, nil)
+
+	if r.Method != http.MethodPost {
+		t.Execute(w, nil)
+		log.Print("Displaying new contact page.")
+		return
+	}
+	
+	// Create a new contact
 }
 
 func main() {
