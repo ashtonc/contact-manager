@@ -1,11 +1,14 @@
-{{ define "content" }}
-{{ if . }}
-<ul>
-	{{ range . }}
-	<li>{{ . }}</li>
-	{{ end}}
-</ul>
-{{ else }}
-<p>No contacts yet.</p>
-{{ end }}
-{{ end }}
+{{ define "title" }}{{ end }}
+{{ define "content" -}}
+		{{ if . -}}
+		<ul>
+			{{ range . -}}
+			<li>{{ . }}</li>
+			{{- end}}
+		</ul>
+		{{- else -}}
+		<p>No contacts yet.</p>
+		{{- end }}
+		
+		<a href="/contact/new">Add Contact</a>
+{{- end }}

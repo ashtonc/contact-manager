@@ -1,50 +1,53 @@
-{{ define "title" }}{{ .FirstName }} {{ .LastName }}{{ end }}
-{{ define "content" }}
-<dl class="display">
-	<dt>First name:</dt><dd>
-		<div class="field">
-			{{ if not .FirstName }}
-			<span class="empty">None</span>
-			{{ else }}
-			{{ .FirstName }}
-			{{ end }}
-		</div>
-	</dd>
-	<dt>Last name:</dt><dd>
-		<div class="field">
-			{{ if not .LastName }}
-			<span class="empty">None</span>
-			{{ else }}
-			{{ .LastName }}
-			{{ end }}
-		</div>
-	</dd>
-	<dt>Email:</dt><dd>
-		<div class="field">
-			{{ if not .Email }}
-			<span class="empty">None</span>
-			{{ else }}
-			{{ .Email }}
-			{{ end }}
-		</div>
-	</dd>
-	<dt>Phone Number:</dt><dd>
-		<div class="field">
-			{{ if not .Phone }}
-			<span class="empty">None</span>
-			{{ else }}
-			{{ .Phone }}
-			{{ end }}
-		</div>
-	</dd>
-	<dt>Notes:</dt><dd>
-		<div class="field">
-			{{ if not .Notes }}
-			<span class="empty">None</span>
-			{{ else }}
-			{{ .Notes }}
-			{{ end }}
-		</div>
-	</dd>
-</dl>
-{{ end }}
+{{ define "title" }} | {{ .FirstName }} {{ .LastName }}{{ end }}
+{{ define "content" -}}
+		<dl class="display">
+			<dt>First name:</dt><dd>
+				<div class="field">
+					{{ if not .FirstName -}}
+					<span class="empty">None</span>
+					{{- else -}}
+					{{ .FirstName }}
+					{{- end }}
+				</div>
+			</dd>
+			<dt>Last name:</dt><dd>
+				<div class="field">
+					{{ if not .LastName -}}
+					<span class="empty">None</span>
+					{{- else -}}
+					{{ .LastName }}
+					{{- end }}
+				</div>
+			</dd>
+			<dt>Email:</dt><dd>
+				<div class="field">
+					{{ if not .Email -}}
+					<span class="empty">None</span>
+					{{- else -}}
+					{{ .Email }}
+					{{- end }}
+				</div>
+			</dd>
+			<dt>Phone Number:</dt><dd>
+				<div class="field">
+					{{ if not .Phone -}}
+					<span class="empty">None</span>
+					{{- else -}}
+					{{ .Phone }}
+					{{- end }}
+				</div>
+			</dd>
+			<dt>Notes:</dt><dd>
+				<div class="field">
+					{{ if not .Notes -}}
+					<span class="empty">None</span>
+					{{- else -}}
+					{{ .Notes }}
+					{{- end }}
+				</div>
+			</dd>
+		</dl>
+
+		<a href="/">List of contacts</a>
+		<a href="/contacts/{{ .Id }}/edit">Edit contact</a>
+{{- end }}
