@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	//"io/ioutil"
 	"log"
 	"net/http"
-	"html/template"
+	//"os"
 	"strconv"
+	//"strings"
 )
 
 type Contact struct {
@@ -49,8 +52,9 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 
 func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 	contactIdString := r.URL.Path[len("/contact/"):]
-	// t, _ := (template.ParseFiles("templates/contact.tmpl")
-	t := template.Must(template.ParseFiles("templates/contact.tmpl", "templates/base.tmpl"))
+	//t, _ := (template.ParseFiles("templates/contact.tmpl")
+	//t := template.Must(template.ParseFiles("templates/contact.tmpl", "templates/base.tmpl"))
+	t, err := template.ParseFiles("templates/base.tmpl", "templates/contact.tmpl")
 
 	//log.Print("Request for contact " + contactIdString)
 
@@ -64,8 +68,8 @@ func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 	// Load and print the contact page
 	contact, _ := loadContact(contactId)
 	
-	t.ExecuteTemplate(w, "base", contact)
-	
+	t.Execute(w, contact)
+
 	//fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", contact.FirstName, contact.Notes)
 	log.Print("Displaying contact " + contactIdString)
 }
@@ -86,7 +90,7 @@ func main() {
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/contact/", viewContactHandler)
 	http.HandleFunc("/new", newContactHandler)
-	
+
 	log.Print("Running server on port " + PORT)
 	log.Fatal(http.ListenAndServe(":"+PORT, nil))
 }
