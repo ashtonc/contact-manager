@@ -15,3 +15,22 @@ end
 execute 'ntp_restart' do
   command 'service ntp restart'
 end
+
+# Go installation
+package "golang"
+
+# Build my server
+execute 'build-server' do
+  cwd '/vagrant'
+  command 'go build'
+end
+
+# Install tmux and start the server in the background
+package "tmux"
+execute 'create-server-session' do
+  cwd '/vagrant'
+  command 'tmux new-session -d -s server'
+end
+execute 'start-server' do
+  command "tmux send-keys -t server './contactmanager' C-m"
+end
