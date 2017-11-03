@@ -18,19 +18,18 @@ end
 
 # Go installation
 package "golang"
-
-# Build my server
-execute 'build-server' do
-  cwd '/vagrant'
-  command 'go build'
+execute 'get-mux' do
+  environment 'GOPATH' => '/go'
+  command 'go get -u github.com/gorilla/mux'
 end
 
 # Install tmux and start the server in the background
 package "tmux"
 execute 'create-server-session' do
   cwd '/vagrant'
+  environment 'GOPATH' => '/go'
   command 'tmux new-session -d -s server'
 end
 execute 'start-server' do
-  command "tmux send-keys -t server './contactmanager' C-m"
+  command "tmux send-keys -t server 'go run contactmanager.go' C-m"
 end
