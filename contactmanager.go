@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Contact struct {
@@ -14,39 +14,69 @@ type Contact struct {
 	LastName  string
 	Email     string
 	Phone     string
-	Notes     []byte
+	Notes     string
 }
 
 func (c *Contact) save() error {
-	filename := c.Name + ".txt"
-	return ioutil.WriteFile(filename, c.Notes, 0600)
+	//Save the contact in the database
+	return nil
 }
 
-func loadContact(name string) (*Contact, error) {
-	filename := name + ".txt"
-	notes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
+func loadContact(id int) (*Contact, error) {
+	//Find the contact with that Id in the database
+	contact := Contact{
+		Id:        1,
+		FirstName: "Ashton",
+		LastName:  "Charbonneau",
+		Email:     "ashton@ashtonc.ca",
+		Phone:     "911",
+		Notes:     "Notes here",
 	}
-	return &Contact{Name: name, Notes: notes}, nil
+	return &contact, nil
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	
+	var message string
+	if r.Method == "GET" {
+		message = "all pending tasks GET"
+	} else {
+		message = "all pending tasks POST"
+	}
+	// Show contact list
+	w.Write([]byte(message))
 }
 
 func viewContactHandler(w http.ResponseWriter, r *http.Request) {
-	contact := r.URL.Path[len("/contact/"):]
-	c, _ := loadContact(contact)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", c.Name, c.Notes)
+	contactIdString := r.URL.Path[len("/contact/"):]
+	
+	log.Print("Request for contact " + contactIdString)
+	
+	contactId, err := strconv.Atoi(contactIdString)
+	if err != nil {
+		log.Print("Contact " + contactIdString + " not found")
+		fmt.Fprintf(w, "Not found.")
+		return
+	}
+	
+	// Load and print the contact page
+	contact, _ := loadContact(contactId)
+	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", contact.FirstName, contact.Notes)
+	log.Print("Displaying contact " + contactIdString)
 }
 
 func newContactHandler(w http.ResponseWriter, r *http.Request) {
-	
+	var message string
+	if r.Method == "GET" {
+		message = "all pending tasks GET"
+	} else {
+		message = "all pending tasks POST"
+	}
+	w.Write([]byte(message))
 }
 
 func main() {
 	PORT := "8000"
+
 	log.Print("Running server on port " + PORT)
 	http.HandleFunc("/", indexHandler)
 	http.HandleFunc("/contact/", viewContactHandler)
