@@ -1,6 +1,6 @@
 {{ define "title" }} | Edit Contact{{ end }}
 {{ define "content" -}}
-		<h1>Edit Contact {{ .FirstName }} {{ .LastName }}</h1>
+		<h1>Edit Contact</h1>
 		<form method="POST">
 			<div class="input">
 				<label>First Name:</label>
@@ -24,4 +24,5 @@
 			</div>
 			<input type="submit">
 		</form>
+		<a href="/contacts/{{ .Id }}">View contact</a>
 {{- end }}

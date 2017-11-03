@@ -44,9 +44,11 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	// Get all contacts with a db query
 
+	contacts := []Contact{Contact{1, "af", "al", "a", "a", ""}, Contact{2, "bf", "bl", "", "", "b"}}
+
 	// Show contact list
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/home.tmpl")
-	t.Execute(w, nil)
+	t.Execute(w, contacts)
 }
 
 func viewContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,10 +56,10 @@ func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 	contactIdString := vars["contactid"]
 	contactId, _ := strconv.Atoi(contactIdString)
 	contact, _ := loadContact(contactId)
-	
+
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/contact.tmpl")
 	t.Execute(w, contact)
-	
+
 	log.Print("Displaying contact " + contactIdString + ".")
 }
 
@@ -67,14 +69,27 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 	contactIdString := vars["contactid"]
 	contactId, _ := strconv.Atoi(contactIdString)
 	contact, _ := loadContact(contactId)
-	
+
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/edit_contact.tmpl")
-	
+
 	if r.Method != http.MethodPost {
 		t.Execute(w, contact)
 		log.Print("Displaying edit contact page for contact " + contactIdString + ".")
 		return
 	}
+
+	updatedContact := Contact{
+		FirstName: r.FormValue("firstname"),
+		LastName:  r.FormValue("lastname"),
+		Email:     r.FormValue("email"),
+		Phone:     r.FormValue("phone"),
+		Notes:     r.FormValue("notes"),
+	}
+
+	// Update the database
+
+	t.Execute(w, updatedContact)
+	log.Print("Displaying updated contact page for contact " + contactIdString + ".")
 }
 
 func newContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -85,8 +100,18 @@ func newContactHandler(w http.ResponseWriter, r *http.Request) {
 		log.Print("Displaying new contact page.")
 		return
 	}
-	
-	// Create a new contact
+
+	newContact := Contact{
+		FirstName: r.FormValue("firstname"),
+		LastName:  r.FormValue("lastname"),
+		Email:     r.FormValue("email"),
+		Phone:     r.FormValue("phone"),
+		Notes:     r.FormValue("notes"),
+	}
+
+	// Save this fella in the database
+
+	t.Execute(w, newContact)
 }
 
 func main() {
