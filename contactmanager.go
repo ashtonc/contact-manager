@@ -117,8 +117,8 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 		log.Print("Big problem!")
 	}
 
-	t.Execute(w, updatedContact)
 	log.Print("Displaying updated contact page for contact " + contactIdString + ".")
+	http.Redirect(w, r, "/contacts/" + contactIdString, 303)
 }
 
 func newContactHandler(w http.ResponseWriter, r *http.Request) {
