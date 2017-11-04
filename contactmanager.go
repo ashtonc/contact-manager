@@ -36,16 +36,14 @@ func (c *Contact) save() error {
 
 func loadContact(id int) (*Contact, error) {
 	//Find the contact with that id in the database and load it
-	contact := Contact{
-		Id:        1,
-		FirstName: "Ashton",
-		LastName:  "Charbonneau",
-		Email:     "ashton@ashtonc.ca",
-		Phone:     "911",
-		Notes:     "",
-	}
+	
+	var contact Contact
 
-	return &contact, nil
+	sqlStatement := `SELECT id, first_name, last_name, email, phone, notes FROM contacts WHERE id=$1;`
+	row := db.QueryRow(sqlStatement, id)  
+	err := row.Scan(&contact.Id, &contact.FirstName, &contact.LastName, &contact.Email, &contact.Phone, &contact.Notes)
+
+	return &contact, err
 }
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -75,7 +73,6 @@ func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func editContactHandler(w http.ResponseWriter, r *http.Request) {
-	// Edit a contact
 	vars := mux.Vars(r)
 	contactIdString := vars["contactid"]
 	contactId, _ := strconv.Atoi(contactIdString)
