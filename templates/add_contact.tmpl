@@ -1,9 +1,9 @@
 {{ define "title" }} | New Contact{{ end }}
 {{ define "content" -}}
-	{{if .Success -}}
-		<h1>Contact added.</h1>
-	{{- else -}}
 		<h1>New Contact</h1>
+	{{ if .Id -}}
+		<p>Contact added. <a href="/contacts/{{ .Id }}">View contact</a>.</p>
+	{{- end}}
 		<form method="POST">
 			<div class="input">
 				<label>First Name:</label>
@@ -27,5 +27,4 @@
 			</div>
 			<input type="submit">
 		</form>
-	{{- end}}
 {{- end }}

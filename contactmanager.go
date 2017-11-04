@@ -145,6 +145,8 @@ func newContactHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
+	newContact.Id = newId
+
 	log.Print("Saved new contact with ID " + strconv.Itoa(newId) + ".")
 	t.Execute(w, newContact)
 }
@@ -163,6 +165,7 @@ func main() {
 
 	r.HandleFunc("/", redirectHandler)
 	r.HandleFunc("/contacts", homeHandler)
+	r.HandleFunc("/contacts/", redirectHandler)
 	r.HandleFunc("/contacts/{contactid:[0-9]+}", viewContactHandler)
 	r.HandleFunc("/contacts/{contactid:[0-9]+}/edit", editContactHandler)
 	r.HandleFunc("/contacts/new", newContactHandler)
