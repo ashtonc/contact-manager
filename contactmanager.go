@@ -98,13 +98,14 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 		Notes:     r.FormValue("notes"),
 	}
 
-	sqlStatement := `
-UPDATE users
-SET first_name = $2, last_name = $3, email = $4, phone = $5, notes = $6
-WHERE id = $1;`
-	_, err := db.Exec(sqlStatement, updatedContact.Id, updatedContact.FirstName, updatedContact.LastName, updatedContact.Email, updatedContact.Phone, updatedContact.Notes)
+	sqlStatement := `UPDATE contacts SET first_name = $2, last_name = $3, email = $4, phone = $5, notes = $6 WHERE id = $1 RETURNING id;`
+	updatedId := 0
+	err := db.QueryRow(sqlStatement, updatedContact.Id, updatedContact.FirstName, updatedContact.LastName, updatedContact.Email, updatedContact.Phone, updatedContact.Notes).Scan(&updatedId)
 	if err != nil {
 		panic(err)
+	}
+	if updatedContact.Id != updatedId {
+		log.Print("Big problem!")
 	}
 
 	t.Execute(w, updatedContact)
@@ -128,32 +129,28 @@ func newContactHandler(w http.ResponseWriter, r *http.Request) {
 		Notes:     r.FormValue("notes"),
 	}
 
-	sqlStatement := `
-INSERT INTO contacts (first_name, last_name, email, phone, notes)
-VALUES ($1, $2, $3, $4, $5);`
-	_, err := db.Exec(sqlStatement, newContact.FirstName, newContact.LastName, newContact.Email, newContact.Phone, newContact.Notes)
+	sqlStatement := `INSERT INTO contacts (first_name, last_name, email, phone, notes) VALUES ($1, $2, $3, $4, $5) RETURNING id`
+	newId := 0
+	err := db.QueryRow(sqlStatement, newContact.FirstName, newContact.LastName, newContact.Email, newContact.Phone, newContact.Notes).Scan(&newId)
 	if err != nil {
 		panic(err)
 	}
 
-	log.Print("Saved new contact.")
-	t.Execute(w, nil)
+	log.Print("Saved new contact with ID " + strconv.Itoa(newId) + ".")
+	t.Execute(w, newContact)
 }
 
 func main() {
 	r := mux.NewRouter()
 
 	dbinfo := "user=" + DB_USER + " password=" + DB_PASSWORD + " dbname=" + DB_NAME + " sslmode=disable"
-	db, err := sql.Open("postgres", dbinfo)
-	if err != nil {
-		panic(err)
-	}
+	db, _ = sql.Open("postgres", dbinfo)
 	defer db.Close()
 
-err = db.Ping()  
-if err != nil {  
-  panic(err)
-}
+	err := db.Ping()  
+	if err != nil {  
+		panic(err)
+	}
 
 	r.HandleFunc("/", redirectHandler)
 	r.HandleFunc("/contacts", homeHandler)
