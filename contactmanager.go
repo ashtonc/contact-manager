@@ -29,14 +29,7 @@ type Contact struct {
 	Notes     string
 }
 
-func (c *Contact) save() error {
-	//Save the contact in the database
-	return nil
-}
-
-func loadContact(id int) (*Contact, error) {
-	//Find the contact with that id in the database and load it
-	
+func loadContact(id int) (*Contact, error) {	
 	var contact Contact
 
 	sqlStatement := `SELECT id, first_name, last_name, email, phone, notes FROM contacts WHERE id=$1;`
@@ -51,11 +44,25 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	// Get all contacts with a db query
+	var contacts []Contact 
 
-	contacts := []Contact{Contact{1, "af", "al", "a", "a", ""}, Contact{2, "bf", "bl", "", "", "b"}}
+	rows, err := db.Query("SELECT id, first_name, last_name FROM contacts ORDER BY id")  
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
 
-	// Show contact list
+	for rows.Next() {
+		var Id int
+		var FirstName string
+		var LastName string
+		err = rows.Scan(&Id, &FirstName, &LastName)
+		if err != nil {
+			panic(err)
+		}
+		contacts = append(contacts, Contact{Id: Id, FirstName: FirstName, LastName: LastName})
+	}
+
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/home.tmpl")
 	t.Execute(w, contacts)
 }
@@ -64,7 +71,12 @@ func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	contactIdString := vars["contactid"]
 	contactId, _ := strconv.Atoi(contactIdString)
-	contact, _ := loadContact(contactId)
+	contact, err := loadContact(contactId)
+	if err != nil {
+		
+		log.Print("Contact " + contactIdString + " not found.")
+		return
+	}
 
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/contact.tmpl")
 	t.Execute(w, contact)
