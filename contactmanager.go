@@ -1,13 +1,23 @@
 package main
 
 import (
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
-	//"database/sql"
 
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
+)
+
+var db *sql.DB
+
+const (
+	PORT        = "8000"
+	DB_USER     = "ubuntu"
+	DB_PASSWORD = "ubuntu"
+	DB_NAME     = "contactdb"
 )
 
 type Contact struct {
@@ -80,6 +90,7 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	updatedContact := Contact{
+		Id:        contactId,
 		FirstName: r.FormValue("firstname"),
 		LastName:  r.FormValue("lastname"),
 		Email:     r.FormValue("email"),
@@ -87,7 +98,14 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 		Notes:     r.FormValue("notes"),
 	}
 
-	// Update the database
+	sqlStatement := `
+UPDATE users
+SET first_name = $2, last_name = $3, email = $4, phone = $5, notes = $6
+WHERE id = $1;`
+	_, err := db.Exec(sqlStatement, updatedContact.Id, updatedContact.FirstName, updatedContact.LastName, updatedContact.Email, updatedContact.Phone, updatedContact.Notes)
+	if err != nil {
+		panic(err)
+	}
 
 	t.Execute(w, updatedContact)
 	log.Print("Displaying updated contact page for contact " + contactIdString + ".")
@@ -110,14 +128,32 @@ func newContactHandler(w http.ResponseWriter, r *http.Request) {
 		Notes:     r.FormValue("notes"),
 	}
 
-	// Save this fella in the database
+	sqlStatement := `
+INSERT INTO contacts (first_name, last_name, email, phone, notes)
+VALUES ($1, $2, $3, $4, $5);`
+	_, err := db.Exec(sqlStatement, newContact.FirstName, newContact.LastName, newContact.Email, newContact.Phone, newContact.Notes)
+	if err != nil {
+		panic(err)
+	}
 
-	t.Execute(w, newContact)
+	log.Print("Saved new contact.")
+	t.Execute(w, nil)
 }
 
 func main() {
-	PORT := "8000"
 	r := mux.NewRouter()
+
+	dbinfo := "user=" + DB_USER + " password=" + DB_PASSWORD + " dbname=" + DB_NAME + " sslmode=disable"
+	db, err := sql.Open("postgres", dbinfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+err = db.Ping()  
+if err != nil {  
+  panic(err)
+}
 
 	r.HandleFunc("/", redirectHandler)
 	r.HandleFunc("/contacts", homeHandler)

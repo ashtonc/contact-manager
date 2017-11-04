@@ -22,6 +22,21 @@ execute 'get-mux' do
   environment 'GOPATH' => '/go'
   command 'go get -u github.com/gorilla/mux'
 end
+execute 'get-pq' do
+  environment 'GOPATH' => '/go'
+  command 'go get -u github.com/lib/pq'
+end
+
+# postgres setup
+package "postgresql"
+execute 'postgres-setup' do
+  environment 'PASSWORD' => "'ubuntu'"
+  command 'echo "CREATE DATABASE contactdb; CREATE USER ubuntu WITH PASSWORD $PASSWORD; GRANT ALL PRIVILEGES ON DATABASE contactdb TO ubuntu;" | sudo -u postgres psql'
+end
+execute 'database-setup' do
+  cwd '/vagrant'
+  command 'sudo -u postgres psql contactdb -f schema.sql'
+end
 
 # Install tmux and start the server in the background
 package "tmux"
@@ -33,3 +48,6 @@ end
 execute 'start-server' do
   command "tmux send-keys -t server 'go run contactmanager.go' C-m"
 end
+
+# sudo su
+# tmux attach -t server
