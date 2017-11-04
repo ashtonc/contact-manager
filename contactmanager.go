@@ -163,6 +163,8 @@ func main() {
 		panic(err)
 	}
 
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/")))) 
+
 	r.HandleFunc("/", redirectHandler)
 	r.HandleFunc("/contacts", homeHandler)
 	r.HandleFunc("/contacts/", redirectHandler)
