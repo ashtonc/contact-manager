@@ -2,7 +2,9 @@
 {{ define "content" -}}
 		<h1>New Contact</h1>
 	{{ if .Id -}}
-		<p>Contact added. <a href="/contacts/{{ .Id }}">View contact</a>.</p>
+		<div class="alert">
+			<p>Contact added. <a href="/contacts/{{ .Id }}">View contact</a>.</p>
+		</div>
 	{{- end}}
 		<form method="POST">
 			<div class="input">
@@ -27,4 +29,7 @@
 			</div>
 			<input type="submit">
 		</form>
+		<div class="nav">
+			<a href="/contacts">View all contacts</a>
+		</div>
 {{- end }}

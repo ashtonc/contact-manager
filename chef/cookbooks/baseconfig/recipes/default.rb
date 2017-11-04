@@ -33,7 +33,7 @@ execute 'postgres-setup' do
   command 'echo "CREATE DATABASE contactdb;" | sudo -u postgres psql'
 end
 execute 'postgres-password' do
-  command "echo 'ALTER USER postgres WITH PASSWORD \'postgres\';' | sudo -u postgres psql"
+  command 'echo "ALTER USER postgres WITH PASSWORD \'postgres\';" | sudo -u postgres psql'
 end
 execute 'database-setup' do
   cwd '/vagrant'

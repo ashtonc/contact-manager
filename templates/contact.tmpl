@@ -1,5 +1,6 @@
 {{ define "title" }} | {{ .FirstName }} {{ .LastName }}{{ end }}
 {{ define "content" -}}
+		<h1>{{ .FirstName }} {{ .LastName }}</h1>
 		<dl class="display">
 			<dt>First name:</dt><dd>
 				<div class="field">
@@ -47,5 +48,10 @@
 				</div>
 			</dd>
 		</dl>
-		<a href="/contacts/{{ .Id }}/edit">Edit contact</a>
+		<div class="nav">
+			<a href="/contacts/{{ .Id }}/edit">Edit contact</a>
+		</div>
+		<div class="nav">
+			<a href="/contacts">View all contacts</a>
+		</div>
 {{- end }}
