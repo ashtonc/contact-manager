@@ -30,8 +30,10 @@ end
 # postgres setup
 package "postgresql"
 execute 'postgres-setup' do
-  environment 'PASSWORD' => "'ubuntu'"
-  command 'echo "CREATE DATABASE contactdb; CREATE USER ubuntu WITH PASSWORD $PASSWORD; GRANT ALL PRIVILEGES ON DATABASE contactdb TO ubuntu;" | sudo -u postgres psql'
+  command 'echo "CREATE DATABASE contactdb;" | sudo -u postgres psql'
+end
+execute 'postgres-password' do
+  command "echo 'ALTER USER postgres WITH PASSWORD \'postgres\';' | sudo -u postgres psql"
 end
 execute 'database-setup' do
   cwd '/vagrant'

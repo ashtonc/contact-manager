@@ -15,8 +15,8 @@ var db *sql.DB
 
 const (
 	PORT        = "8000"
-	DB_USER     = "ubuntu"
-	DB_PASSWORD = "ubuntu"
+	DB_USER     = "postgres"
+	DB_PASSWORD = "postgres"
 	DB_NAME     = "contactdb"
 )
 
