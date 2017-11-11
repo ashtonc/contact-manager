@@ -48,7 +48,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	rows, err := db.Query("SELECT id, first_name, last_name FROM contacts ORDER BY id")  
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
@@ -58,7 +58,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		var LastName string
 		err = rows.Scan(&Id, &FirstName, &LastName)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 		contacts = append(contacts, Contact{Id: Id, FirstName: FirstName, LastName: LastName})
 	}
@@ -73,7 +73,7 @@ func viewContactHandler(w http.ResponseWriter, r *http.Request) {
 	contactId, _ := strconv.Atoi(contactIdString)
 	contact, err := loadContact(contactId)
 	if err != nil {
-		
+		http.Redirect(w, r, "/contacts", 307)
 		log.Print("Contact " + contactIdString + " not found.")
 		return
 	}
@@ -111,7 +111,7 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 	updatedId := 0
 	err := db.QueryRow(sqlStatement, updatedContact.Id, updatedContact.FirstName, updatedContact.LastName, updatedContact.Email, updatedContact.Phone, updatedContact.Notes).Scan(&updatedId)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	if updatedContact.Id != updatedId {
 		log.Print("Big problem!")
@@ -142,7 +142,7 @@ func newContactHandler(w http.ResponseWriter, r *http.Request) {
 	newId := 0
 	err := db.QueryRow(sqlStatement, newContact.FirstName, newContact.LastName, newContact.Email, newContact.Phone, newContact.Notes).Scan(&newId)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
 	newContact.Id = newId
@@ -160,9 +160,10 @@ func main() {
 
 	err := db.Ping()  
 	if err != nil {  
-		panic(err)
+		log.Fatal(err)
 	}
 
+	// Nginx backup at this point
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/")))) 
 
 	r.HandleFunc("/", redirectHandler)
