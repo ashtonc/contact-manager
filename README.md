@@ -14,7 +14,7 @@ To view the server log, `vagrant ssh` into the virtual machine, `sudo su` to swi
 * Some SQL errors still need to be properly handled in the code.
 * Templates have a bit of repetition that could be reduced.
 * Required fields could be added.
-* Notes field should allow new lines.
+* Notes field should display the new lines.
 * Giant submit button looks kinda juvenile.
 * Postgres login should be more secure.
 * CSRF field needs to be added: github.com/gorilla/csrf
