@@ -1,4 +1,4 @@
-# Make sure the Apt package lists are up to date, so we're downloading versions that exist.
+# make sure the apt package lists are up to date
 cookbook_file "apt-sources.list" do
   path "/etc/apt/sources.list"
 end
@@ -6,7 +6,7 @@ execute 'apt_update' do
   command 'apt-get update'
 end
 
-# Base configuration recipe in Chef.
+# base configuration recipe in Chef.
 package "wget"
 package "ntp"
 cookbook_file "ntp.conf" do
@@ -52,7 +52,7 @@ execute 'nginx_reload' do
   command 'nginx -s reload'
 end
 
-# Install tmux and start the server in the background
+# install tmux and start the server in a background session
 package "tmux"
 execute 'create-server-session' do
   cwd '/vagrant'
@@ -63,5 +63,3 @@ execute 'start-server' do
   command "tmux send-keys -t server 'go run contactmanager.go' C-m"
 end
 
-# sudo su
-# tmux attach -t server

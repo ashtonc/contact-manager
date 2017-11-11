@@ -1,4 +1,4 @@
-This is a contact manager implemented using Go.
+This is a contact manager implemented using Go. It uses postgres as its database server and runs nginx as a front end server that serves static content and reverse proxies the go http server.
 
 ## Running
 
@@ -8,7 +8,7 @@ To view the server log, `vagrant ssh` into the virtual machine, `sudo su` to swi
 
 ## Bugs/fixes
 
-* Proper put/delete requests should be added.
+* Proper put/delete requests should be added (along with the ability to delete a contact).
 * Think a bit more about the nginx config...
 * Definition list CSS should be cleaned up, navigation should be made nicer, and the contact list could look better.
 * Some SQL errors still need to be properly handled in the code.
