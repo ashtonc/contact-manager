@@ -1,0 +1,16 @@
+
+server {
+	listen 80;
+
+	# Static files (files in the /static directory) are served immediately
+	location /static {
+		alias /vagrant/static;
+		autoindex on;
+		try_files $uri =404;
+	}
+
+	# Regular requests are forwarded to the Go server
+	location / {
+		proxy_pass http://localhost:8000;
+	}
+}

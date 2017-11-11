@@ -40,6 +40,18 @@ execute 'database-setup' do
   command 'sudo -u postgres psql contactdb -f schema.sql'
 end
 
+# nginx setup
+package "nginx"
+execute 'nginx_pid' do
+  command 'mkdir -p /run/nginx'
+end
+cookbook_file "nginx-config" do
+  path "/etc/nginx/sites-available/default"
+end
+execute 'nginx_reload' do
+  command 'nginx -s reload'
+end
+
 # Install tmux and start the server in the background
 package "tmux"
 execute 'create-server-session' do
