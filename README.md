@@ -8,7 +8,8 @@ To view the server log, `vagrant ssh` into the virtual machine, `sudo su` to swi
 
 ## Bugs/fixes
 
-* Still need to implement proper 404 pages if people visit /contact/non-existent-id.
+* Proper put/delete requests should be added.
+* Think a bit more about the nginx config...
 * Definition list CSS should be cleaned up, navigation should be made nicer, and the contact list could look better.
 * Some SQL errors still need to be properly handled in the code.
 * Templates have a bit of repetition that could be reduced.

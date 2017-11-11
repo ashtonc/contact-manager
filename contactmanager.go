@@ -29,11 +29,11 @@ type Contact struct {
 	Notes     string
 }
 
-func loadContact(id int) (*Contact, error) {	
+func loadContact(id int) (*Contact, error) {
 	var contact Contact
 
 	sqlStatement := `SELECT id, first_name, last_name, email, phone, notes FROM contacts WHERE id=$1;`
-	row := db.QueryRow(sqlStatement, id)  
+	row := db.QueryRow(sqlStatement, id)
 	err := row.Scan(&contact.Id, &contact.FirstName, &contact.LastName, &contact.Email, &contact.Phone, &contact.Notes)
 
 	return &contact, err
@@ -44,9 +44,9 @@ func redirectHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	var contacts []Contact 
+	var contacts []Contact
 
-	rows, err := db.Query("SELECT id, first_name, last_name FROM contacts ORDER BY id")  
+	rows, err := db.Query("SELECT id, first_name, last_name FROM contacts ORDER BY id")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,7 +88,12 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	contactIdString := vars["contactid"]
 	contactId, _ := strconv.Atoi(contactIdString)
-	contact, _ := loadContact(contactId)
+	contact, err := loadContact(contactId)
+	if err != nil {
+		http.Redirect(w, r, "/contacts", 307)
+		log.Print("Contact " + contactIdString + " not found.")
+		return
+	}
 
 	t, _ := template.ParseFiles("templates/base.tmpl", "templates/edit_contact.tmpl")
 
@@ -109,7 +114,7 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 
 	sqlStatement := `UPDATE contacts SET first_name = $2, last_name = $3, email = $4, phone = $5, notes = $6 WHERE id = $1 RETURNING id;`
 	updatedId := 0
-	err := db.QueryRow(sqlStatement, updatedContact.Id, updatedContact.FirstName, updatedContact.LastName, updatedContact.Email, updatedContact.Phone, updatedContact.Notes).Scan(&updatedId)
+	err = db.QueryRow(sqlStatement, updatedContact.Id, updatedContact.FirstName, updatedContact.LastName, updatedContact.Email, updatedContact.Phone, updatedContact.Notes).Scan(&updatedId)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -118,7 +123,7 @@ func editContactHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Print("Displaying updated contact page for contact " + contactIdString + ".")
-	http.Redirect(w, r, "/contacts/" + contactIdString, 303)
+	http.Redirect(w, r, "/contacts/"+contactIdString, 303)
 }
 
 func newContactHandler(w http.ResponseWriter, r *http.Request) {
@@ -158,13 +163,13 @@ func main() {
 	db, _ = sql.Open("postgres", dbinfo)
 	defer db.Close()
 
-	err := db.Ping()  
-	if err != nil {  
+	err := db.Ping()
+	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Nginx backup at this point
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/")))) 
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
 	r.HandleFunc("/", redirectHandler)
 	r.HandleFunc("/contacts", homeHandler)
